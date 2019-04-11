@@ -10,15 +10,25 @@ namespace ColorSwitch
         public Rigidbody2D rigid;
         public SpriteRenderer rend;
 
+        
         public Color[] colors = new Color[4];
 
         public UnityEvent onGameOver;
 
         private Color currentColor;
+        //Reference
+        public GameObject player;
+        public GameObject win, lose;
+        //Score
+        public static int score;
+        public int newscore = 1;
+
+
 
         void Start()
         {
             RandomizeColor();
+            score = 0;            
         }
 
         // Update is called once per frame
@@ -27,6 +37,16 @@ namespace ColorSwitch
             if (Input.GetButtonDown("Jump") || Input.GetMouseButtonDown(0))
             {
                 rigid.velocity = Vector2.up * jumpForce;
+            }
+            Vector2 screenPosition = Camera.main.WorldToScreenPoint(transform.position);
+            if (screenPosition.y > Screen.height || screenPosition.y < 0)
+            {
+
+                Lose();
+            }
+            if(score == 3)
+            {
+                Win();
             }
         }
 
@@ -42,7 +62,10 @@ namespace ColorSwitch
             if (col.name == "Star")
             {
                 // Add score
+
                 Destroy(col.gameObject);
+                score += newscore;
+                
                 return;
             }
 
@@ -50,15 +73,52 @@ namespace ColorSwitch
             if (spriteRend != null &&
                spriteRend.color != rend.color)
             {
-                Debug.Log("GAME OVER!");
-                onGameOver.Invoke();
+                
+                
+               Lose();
+               onGameOver.Invoke();
+               
             }
         }
 
         void RandomizeColor()
         {
+
+            /*
+             * Generate random color
+             * While randomColor == rend.color
+             *      Generate another randomColor
+                  
+             *
+             */
+            
+            //Generate random color
             int index = Random.Range(0, 4);
-            rend.color = colors[index];
+            Color randomColor = colors[index];
+            //While randomColor == rend.color
+            while (randomColor == rend.color)
+            {
+                // Generate another random color
+                index = Random.Range(0, 4);
+                randomColor = colors[index];
+            }
+            // Set renderer color to random color
+            rend.color = randomColor;
+        }
+        public void Win()
+        {
+            win.SetActive(true);
+            lose.SetActive(false);
+
+        }
+        public void Lose()
+        {
+            Destroy(player);
+            win.SetActive(false);
+            lose.SetActive(true);
+
+
+
         }
     }
 }

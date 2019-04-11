@@ -29,5 +29,6 @@ namespace ColorSwitch
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.buildIndex);
         }
+        
     }
 }
